@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_assetflow_maintenance_tree" model="ir.ui.view">
+        <field name="name">asset.maintenance.tree</field>
+        <field name="model">asset.maintenance</field>
+        <field name="arch" type="xml">
+            <tree string="Maintenance Requests" decoration-danger="priority == 'high'">
+                <field name="asset_id"/>
+                <field name="reporter_id"/>
+                <field name="technician_id"/>
+                <field name="priority" widget="badge" 
+                       decoration-danger="priority == 'high'"
+                       decoration-warning="priority == 'medium'"
+                       decoration-info="priority == 'low'"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'pending'"
+                       decoration-primary="state == 'approved'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-success="state == 'resolved'"
+                       decoration-muted="state == 'rejected'"/>
+                <field name="create_date" string="Created Date" widget="date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_assetflow_maintenance_form" model="ir.ui.view">
+        <field name="name">asset.maintenance.form</field>
+        <field name="model">asset.maintenance</field>
+        <field name="arch" type="xml">
+            <form string="Maintenance Request">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,approved,in_progress,resolved" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="General Information">
+                            <field name="asset_id"/>
+                            <field name="reporter_id"/>
+                            <field name="technician_id"/>
+                            <field name="priority"/>
+                        </group>
+                        <group string="Issue Details">
+                            <field name="description"/>
+                            <field name="photo" widget="image" class="oe_avatar" options="{'size': [120, 120]}"/>
+                        </group>
+                    </group>
+                    <group string="Resolution">
+                        <field name="resolution_notes" nolabel="1" placeholder="Enter resolution notes here..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_assetflow_maintenance_search" model="ir.ui.view">
+        <field name="name">asset.maintenance.search</field>
+        <field name="model">asset.maintenance</field>
+        <field name="arch" type="xml">
+            <search string="Search Maintenance Requests">
+                <field name="asset_id"/>
+                <field name="reporter_id"/>
+                <field name="technician_id"/>
+
+                <filter string="Open" name="open" domain="[('state', 'in', ('pending', 'approved', 'in_progress'))]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Resolved" name="resolved" domain="[('state', '=', 'resolved')]"/>
+                <separator/>
+                <filter string="High Priority" name="high_priority" domain="[('priority', '=', 'high')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Technician" name="group_technician" context="{'group_by':'technician_id'}"/>
+                    <filter string="Priority" name="group_priority" context="{'group_by':'priority'}"/>
+                    <filter string="State" name="group_state" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_assetflow_maintenance" model="ir.actions.act_window">
+        <field name="name">Maintenance Requests</field>
+        <field name="res_model">asset.maintenance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_assetflow_maintenance_search"/>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Raise a new maintenance request
+          </p>
+          <p>
+            Track and manage repairs for your company's assets. Keep assets in top condition!
+          </p>
+        </field>
+    </record>
+
+    <!-- Force Action to use specific views -->
+    <record id="action_assetflow_maintenance_tree_view" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_assetflow_maintenance_tree"/>
+        <field name="act_window_id" ref="action_assetflow_maintenance"/>
+    </record>
+
+    <record id="action_assetflow_maintenance_form_view" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_assetflow_maintenance_form"/>
+        <field name="act_window_id" ref="action_assetflow_maintenance"/>
+    </record>
+
+</odoo>

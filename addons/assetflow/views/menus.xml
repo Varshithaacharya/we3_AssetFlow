@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Root Menu Item -->
-    <menuitem id="menu_assetflow_root" 
-              name="AssetFlow" 
-              web_icon="assetflow,static/description/icon.png"
-              sequence="10"/>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_assetflow_root" name="AssetFlow" sequence="10" web_icon="assetflow,static/description/icon.png"/>
+
+    <!-- 1. Dashboard -->
+    <menuitem id="menu_assetflow_dashboard" name="Dashboard" parent="menu_assetflow_root" action="action_assetflow_dashboard" sequence="10"/>
+
+    <!-- 2. Organization Setup (Admin Only) -->
+    <menuitem id="menu_assetflow_org_setup" name="Organization Setup" parent="menu_assetflow_root" sequence="20" groups="assetflow.group_assetflow_admin"/>
+    
+    <menuitem id="menu_assetflow_department" name="Departments" parent="menu_assetflow_org_setup" action="action_assetflow_department" sequence="10"/>
+    <menuitem id="menu_assetflow_category" name="Asset Categories" parent="menu_assetflow_org_setup" action="action_asset_category" sequence="20"/>
+    <menuitem id="menu_assetflow_employee" name="Employee Directory" parent="menu_assetflow_org_setup" action="action_assetflow_employee" sequence="30"/>
+
+    <!-- 3. Asset Management -->
+    <menuitem id="menu_assetflow_asset_management" name="Asset Management" parent="menu_assetflow_root" sequence="30"/>
+
+    <menuitem id="menu_assetflow_asset" name="Assets" parent="menu_assetflow_asset_management" action="action_assetflow_asset" sequence="10"/>
+    <menuitem id="menu_assetflow_allocation" name="Allocation" parent="menu_assetflow_asset_management" action="action_assetflow_allocation" sequence="20"/>
+
+    <!-- 4. Operations -->
+    <menuitem id="menu_assetflow_operations" name="Operations" parent="menu_assetflow_root" sequence="40"/>
+
+    <menuitem id="menu_assetflow_booking" name="Resource Booking" parent="menu_assetflow_operations" action="action_assetflow_booking" sequence="10"/>
+    <menuitem id="menu_assetflow_maintenance" name="Maintenance" parent="menu_assetflow_operations" action="action_assetflow_maintenance" sequence="20"/>
+    <menuitem id="menu_assetflow_audit" name="Audit" parent="menu_assetflow_operations" action="action_assetflow_audit_cycle" sequence="30"/>
+
+    <!-- 5. Notifications -->
+    <menuitem id="menu_assetflow_notifications" name="Notifications" parent="menu_assetflow_root" action="action_assetflow_notification" sequence="50"/>
+
 </odoo>
