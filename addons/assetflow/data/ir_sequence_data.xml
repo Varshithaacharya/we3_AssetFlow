@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="sequence_asset_asset" model="ir.sequence">
             <field name="name">Asset Tag Sequence</field>
-            <field name="code">asset.asset.sequence</field>
+            <field name="code">assetflow.asset.sequence</field>
             <field name="prefix">AF-</field>
             <field name="padding">4</field>
             <field name="number_next">1</field>
@@ -13,7 +13,7 @@
 
         <record id="sequence_asset_audit" model="ir.sequence">
             <field name="name">Asset Audit Sequence</field>
-            <field name="code">asset.audit.sequence</field>
+            <field name="code">assetflow.audit.sequence</field>
             <field name="prefix">AUD-</field>
             <field name="padding">4</field>
             <field name="number_next">1</field>

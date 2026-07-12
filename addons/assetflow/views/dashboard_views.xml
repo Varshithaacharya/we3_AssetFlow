@@ -157,7 +157,26 @@
                         <div class="o_kanban_card_content af_dashboard w-100">
                             <!-- Custom Styles mapping to the AssetFlow Design System -->
                             <style>
-                                .af_dashboard {
+                                 /* Override Odoo Kanban default card constraints to make dashboard full-width */
+                                 .o_kanban_renderer {
+                                     display: flex !important;
+                                     flex-direction: column !important;
+                                     width: 100% !important;
+                                     padding: 0 !important;
+                                     background-color: #F9FAFB !important;
+                                 }
+                                 .o_kanban_renderer .o_kanban_record {
+                                     width: 100% !important;
+                                     max-width: 100% !important;
+                                     min-width: 100% !important;
+                                     flex: 1 1 100% !important;
+                                     margin: 0 !important;
+                                     padding: 0 !important;
+                                     border: none !important;
+                                     background: transparent !important;
+                                     box-shadow: none !important;
+                                 }
+                                 .af_dashboard {
                                     background-color: #F9FAFB;
                                     font-family: 'Inter', 'Roboto', sans-serif;
                                     padding: 24px;
@@ -492,11 +511,7 @@
     <!-- 6. Menu Structure Configuration                                        -->
     <!-- ======================================================================= -->
 
-    <!-- Root Menu Item -->
-    <menuitem id="menu_assetflow_root" 
-              name="AssetFlow" 
-              web_icon="assetflow,static/description/icon.png"
-              sequence="10"/>
+
 
     <!-- Dashboard Menu Item under Root -->
     <menuitem id="menu_assetflow_dashboard" 

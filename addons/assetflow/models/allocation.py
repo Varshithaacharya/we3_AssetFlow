@@ -2,12 +2,12 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class AssetAllocation(models.Model):
-    _name = 'asset.allocation'
+    _name = 'assetflow.allocation'
     _description = 'Asset Allocation'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'allocation_date desc, id desc'
 
-    asset_id = fields.Many2one('asset.asset', string='Asset', required=True, tracking=True)
+    asset_id = fields.Many2one('assetflow.asset', string='Asset', required=True, tracking=True)
     employee_id = fields.Many2one('hr.employee', string='Employee', tracking=True)
     department_id = fields.Many2one('hr.department', string='Department', tracking=True)
     allocated_by_id = fields.Many2one('hr.employee', string='Allocated By', required=True)
@@ -15,14 +15,29 @@ class AssetAllocation(models.Model):
     expected_return_date = fields.Date(string='Expected Return Date', tracking=True)
     actual_return_date = fields.Date(string='Actual Return Date', tracking=True)
     state = fields.Selection([
+        ('draft', 'Draft'),
         ('requested', 'Requested'),
+        ('approved', 'Approved'),
         ('allocated', 'Allocated'),
-        ('transfer_requested', 'Transfer Requested'),
-        ('returned', 'Returned'),
-        ('cancelled', 'Cancelled')
-    ], string='Status', default='requested', required=True, tracking=True)
-    check_in_notes = fields.Text(string='Check-in Notes')
+        ('transfer', 'Transfer Requested'),
+        ('returned', 'Returned')
+    ], string='Status', default='draft', required=True, tracking=True)
+    checkin_notes = fields.Text(string='Check-in Notes')
     is_overdue = fields.Boolean(string='Is Overdue', compute='_compute_is_overdue', search='_search_is_overdue')
+    
+    is_currently_allocated = fields.Boolean(compute='_compute_current_status')
+    current_holder_id = fields.Many2one('hr.employee', compute='_compute_current_status')
+
+    @api.depends('asset_id')
+    def _compute_current_status(self):
+        for rec in self:
+            if rec.asset_id and rec.asset_id.state == 'allocated':
+                rec.is_currently_allocated = True
+                active_alloc = rec.asset_id.allocation_ids.filtered(lambda a: a.state == 'allocated')
+                rec.current_holder_id = active_alloc[0].employee_id if active_alloc else False
+            else:
+                rec.is_currently_allocated = False
+                rec.current_holder_id = False
 
     @api.depends('expected_return_date', 'actual_return_date', 'state')
     def _compute_is_overdue(self):
@@ -59,10 +74,10 @@ class AssetAllocation(models.Model):
     @api.constrains('asset_id', 'state')
     def _check_double_allocation(self):
         for rec in self:
-            if rec.state in ('allocated', 'transfer_requested'):
+            if rec.state in ('allocated', 'transfer'):
                 domain = [
                     ('asset_id', '=', rec.asset_id.id),
-                    ('state', 'in', ('allocated', 'transfer_requested')),
+                    ('state', 'in', ('allocated', 'transfer')),
                     ('id', '!=', rec.id)
                 ]
                 other_allocations = self.search_count(domain)
@@ -96,3 +111,25 @@ class AssetAllocation(models.Model):
                 })
                 if not rec.actual_return_date:
                     rec.actual_return_date = fields.Date.today()
+
+    def action_allocate(self):
+        self.write({'state': 'allocated'})
+
+    def action_request_transfer(self):
+        self.write({'state': 'requested'})
+
+    def action_approve_transfer(self):
+        self.write({'state': 'approved'})
+
+    def action_complete_reallocation(self):
+        self.ensure_one()
+        # Find and release old allocations
+        active_allocs = self.env['assetflow.allocation'].search([
+            ('asset_id', '=', self.asset_id.id),
+            ('state', '=', 'allocated')
+        ])
+        active_allocs.write({'state': 'returned', 'actual_return_date': fields.Date.today()})
+        self.write({'state': 'allocated'})
+
+    def action_mark_returned(self):
+        self.write({'state': 'returned', 'actual_return_date': fields.Date.today()})

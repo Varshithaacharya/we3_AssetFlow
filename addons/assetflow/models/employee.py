@@ -10,23 +10,23 @@ class HrEmployee(models.Model):
     ], string='AssetFlow Role', default='employee', required=True, tracking=True)
 
     allocation_ids = fields.One2many(
-        'asset.allocation',
+        'assetflow.allocation',
         'employee_id',
         string='Asset Allocations'
     )
     booking_ids = fields.One2many(
-        'asset.booking',
+        'assetflow.booking',
         'employee_id',
         string='Resource Bookings'
     )
     maintenance_ids = fields.One2many(
-        'asset.maintenance',
+        'assetflow.maintenance',
         'reporter_id',
         string='Maintenance Requests'
     )
     audit_assignment_ids = fields.Many2many(
-        'asset.audit',
-        'asset_audit_auditor_rel',
+        'assetflow.audit.cycle',
+        'assetflow_audit_auditor_rel',
         'employee_id',
         'audit_id',
         string='Assigned Audits'
