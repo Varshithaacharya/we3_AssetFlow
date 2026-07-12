@@ -1,11 +1,11 @@
 {
-    'name': 'assetflow_base',
+    'name': 'AssetFlow',
     'version': '1.0',
     'depends': ['base'],
     'author': 'Your Name',
     'category': 'Uncategorized',
-    'description': 'assetflow_base module',
+    'description': 'AssetFlow single module',
     'data': [],
     'installable': True,
-    'application': False,
+    'application': True,
 }
