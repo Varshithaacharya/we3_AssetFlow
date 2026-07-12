@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ======================================================================= -->
+    <!-- Window Action: Asset Audits                                             -->
+    <!-- ======================================================================= -->
+    <record id="action_assetflow_audit_cycle" model="ir.actions.act_window">
+        <field name="name">Asset Audits</field>
+        <field name="res_model">assetflow.audit.cycle</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_assetflow_audit_cycle_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Audit Cycle.
+            </p>
+            <p>
+                Track physical presence and condition of inventory assets using auditor checklists.
+            </p>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 1. Tree/List View: Audit Cycles                                         -->
+    <!-- ======================================================================= -->
+    <record id="view_assetflow_audit_cycle_tree" model="ir.ui.view">
+        <field name="name">assetflow.audit.cycle.tree</field>
+        <field name="model">assetflow.audit.cycle</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="scope"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <!-- Auditors tags widget -->
+                <field name="auditor_ids" widget="many2many_tags"/>
+                <!-- Status Badge styling -->
+                <field name="state" widget="badge"
+                       decoration-muted="state == 'draft'"
+                       decoration-info="state == 'in_progress'"
+                       decoration-success="state == 'closed'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 2. Form View: Audit Cycle & Lines                                       -->
+    <!-- ======================================================================= -->
+    <record id="view_assetflow_audit_cycle_form" model="ir.ui.view">
+        <field name="name">assetflow.audit.cycle.form</field>
+        <field name="model">assetflow.audit.cycle</field>
+        <field name="arch" type="xml">
+            <form string="Audit Cycle">
+                <header>
+                    <!-- Start Audit Action to move from Draft to In Progress -->
+                    <button name="action_start_audit" 
+                            string="Start Audit" 
+                            type="object" 
+                            class="btn-primary" 
+                            invisible="state != 'draft'"/>
+                            
+                    <!-- Close Audit Button with confirmation and state restriction -->
+                    <button name="action_close_audit_cycle" 
+                            string="Close Audit Cycle" 
+                            type="object" 
+                            class="btn-primary" 
+                            invisible="state != 'in_progress'" 
+                            confirm="Are you sure? This will lock the cycle and update flagged asset statuses."/>
+                            
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,closed"/>
+                </header>
+                
+                <sheet>
+                    <!-- Smart Button in Sheet Header for Discrepancy Filtering -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_discrepancies" 
+                                type="object" 
+                                class="oe_stat_button" 
+                                icon="fa-exclamation-triangle">
+                            <field name="discrepancy_count" widget="statinfo" string="Discrepancies"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <!-- Read-only once Closed -->
+                            <field name="name" 
+                                   placeholder="e.g. Q3 2026 Laptop Audit" 
+                                   required="1" 
+                                   readonly="state == 'closed'"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Audit Scope">
+                            <field name="scope" 
+                                   placeholder="e.g. IT Department / Floor 2" 
+                                   required="1" 
+                                   readonly="state == 'closed'"/>
+                            <field name="auditor_ids" 
+                                   widget="many2many_tags" 
+                                   placeholder="Select Auditors..." 
+                                   readonly="state == 'closed'"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="date_start" required="1" readonly="state == 'closed'"/>
+                            <field name="date_end" required="1" readonly="state == 'closed'"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Audit Lines" name="audit_lines">
+                            <!-- Entire one2many list is readonly once the cycle is closed -->
+                            <field name="line_ids" readonly="state == 'closed'">
+                                <!-- Editable bottom inline list -->
+                                <tree editable="bottom">
+                                    <field name="asset_id" required="1"/>
+                                    <!-- Colored badge widget for fast entry -->
+                                    <field name="result" widget="badge" 
+                                           decoration-success="result == 'verified'" 
+                                           decoration-danger="result == 'missing'" 
+                                           decoration-warning="result == 'damaged'"/>
+                                    <field name="notes" placeholder="Condition details..."/>
+                                    <field name="auditor_id" required="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 3. Search View: Filtering & Grouping                                    -->
+    <!-- ======================================================================= -->
+    <record id="view_assetflow_audit_cycle_search" model="ir.ui.view">
+        <field name="name">assetflow.audit.cycle.search</field>
+        <field name="model">assetflow.audit.cycle</field>
+        <field name="arch" type="xml">
+            <search string="Search Audit Cycles">
+                <field name="name" string="Cycle Name"/>
+                <field name="scope" string="Scope"/>
+                
+                <!-- Status filters -->
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="In Progress" name="filter_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <!-- Closed cycles filter is NOT applied by default -->
+                <filter string="Closed Cycles" name="filter_closed" domain="[('state', '=', 'closed')]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Scope" name="group_by_scope" context="{'group_by': 'scope'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- MENU STRUCTURE INTEGRATION                                              -->
+    <!-- ======================================================================= -->
+
+    <!-- Sub-menu: Asset Audits (Placed under the parent "Assets" menu) -->
+    <menuitem id="menu_assetflow_audit_cycle" 
+              name="Asset Audits" 
+              parent="menu_assetflow_assets_parent" 
+              action="action_assetflow_audit_cycle" 
+              sequence="40"/>
+
+</odoo>

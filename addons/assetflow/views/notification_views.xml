@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ======================================================================= -->
+    <!-- USER-FACING NOTIFICATIONS VIEW CONFIGURATION                            -->
+    <!-- ======================================================================= -->
+
+    <!-- Window Action: Notifications -->
+    <record id="action_assetflow_notification" model="ir.actions.act_window">
+        <field name="name">Notifications</field>
+        <field name="res_model">assetflow.notification</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_assetflow_notification_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No new notifications.
+            </p>
+            <p>
+                You will be notified here of assignments, return alerts, approvals, and reminders.
+            </p>
+        </field>
+    </record>
+
+    <!-- Tree View: Notifications -->
+    <record id="view_assetflow_notification_tree" model="ir.ui.view">
+        <field name="name">assetflow.notification.tree</field>
+        <field name="model">assetflow.notification</field>
+        <field name="arch" type="xml">
+            <!-- decoration-bf="not is_read" displays unread notifications in bold -->
+            <tree decoration-bf="not is_read" create="0" delete="1">
+                <!-- Header button to mark all notifications as read -->
+                <header>
+                    <button name="action_mark_all_as_read" 
+                            string="Mark all as read" 
+                            type="object" 
+                            class="btn-primary"/>
+                </header>
+                
+                <field name="message"/>
+                <field name="notification_type"/>
+                <field name="create_date" string="Created Date"/>
+                <!-- Read indicator (Simple checkbox) -->
+                <field name="is_read" string="Read"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View: Notification Detail -->
+    <record id="view_assetflow_notification_form" model="ir.ui.view">
+        <field name="name">assetflow.notification.form</field>
+        <field name="model">assetflow.notification</field>
+        <field name="arch" type="xml">
+            <form string="Notification" create="0">
+                <header>
+                    <button name="action_mark_as_read" 
+                            string="Mark as Read" 
+                            type="object" 
+                            class="btn-primary" 
+                            invisible="is_read"/>
+                    <field name="is_read" widget="statusbar" statusbar_visible="0,1" invisible="1"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="notification_type" readonly="1"/>
+                        <field name="create_date" readonly="1"/>
+                    </group>
+                    <group string="Message">
+                        <field name="message" readonly="1" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View: Notifications Filters & Groups -->
+    <record id="view_assetflow_notification_search" model="ir.ui.view">
+        <field name="name">assetflow.notification.search</field>
+        <field name="model">assetflow.notification</field>
+        <field name="arch" type="xml">
+            <search string="Search Notifications">
+                <field name="message"/>
+                <field name="notification_type"/>
+                
+                <!-- Quick filter states -->
+                <filter string="Unread" name="filter_unread" domain="[('is_read', '=', False)]"/>
+                <filter string="Read" name="filter_read" domain="[('is_read', '=', True)]"/>
+                
+                <separator/>
+                
+                <!-- Date range filter -->
+                <filter string="Today" name="filter_today" 
+                        domain="[('create_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), 
+                                 ('create_date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter string="This Week" name="filter_this_week" 
+                        domain="[('create_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d 00:00:00')), 
+                                 ('create_date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d 23:59:59'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Type" name="group_by_type" context="{'group_by': 'notification_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <!-- ======================================================================= -->
+    <!-- ADMIN-FACING ACTIVITY LOGS VIEW CONFIGURATION                           -->
+    <!-- ======================================================================= -->
+
+    <!-- Window Action: Activity Log -->
+    <record id="action_assetflow_activity" model="ir.actions.act_window">
+        <field name="name">Activity Log</field>
+        <field name="res_model">assetflow.activity</field>
+        <!-- Audit log is tree-only as requested -->
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No activity logs recorded.
+            </p>
+            <p>
+                All operational events and modifications will be securely logged here.
+            </p>
+        </field>
+    </record>
+
+    <!-- Tree View: Activity Log (Enforced Read-Only) -->
+    <record id="view_assetflow_activity_tree" model="ir.ui.view">
+        <field name="name">assetflow.activity.tree</field>
+        <field name="model">assetflow.activity</field>
+        <field name="arch" type="xml">
+            <!-- create="0" edit="0" delete="0" disables modifications -->
+            <tree create="0" edit="0" delete="0">
+                <field name="actor_id"/>
+                <field name="action"/>
+                <field name="res_name" string="Related Record"/>
+                <field name="timestamp" string="Timestamp"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <!-- ======================================================================= -->
+    <!-- MENU STRUCTURE INTEGRATION                                              -->
+    <!-- ======================================================================= -->
+
+    <!-- Notifications Menu Item under root -->
+    <menuitem id="menu_assetflow_notification" 
+              name="Notifications" 
+              parent="menu_assetflow_root" 
+              action="action_assetflow_notification" 
+              sequence="50"/>
+
+    <!-- Activity Log Menu Item under root -->
+    <menuitem id="menu_assetflow_activity" 
+              name="Activity Log" 
+              parent="menu_assetflow_root" 
+              action="action_assetflow_activity" 
+              sequence="60"/>
+
+</odoo>
