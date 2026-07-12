@@ -25,7 +25,7 @@
 
     <menuitem id="menu_assetflow_booking" name="Resource Booking" parent="menu_assetflow_operations" action="action_assetflow_booking" sequence="10"/>
     <menuitem id="menu_assetflow_maintenance" name="Maintenance" parent="menu_assetflow_operations" action="action_assetflow_maintenance" sequence="20"/>
-    <menuitem id="menu_assetflow_audit" name="Audit" parent="menu_assetflow_operations" action="action_assetflow_audit_cycle" sequence="30"/>
+    <menuitem id="menu_assetflow_audit" name="Audit" parent="menu_assetflow_operations" action="action_assetflow_audit_cycle" sequence="30" groups="assetflow.group_assetflow_dept_head"/>
 
     <!-- 5. Notifications -->
     <menuitem id="menu_assetflow_notifications" name="Notifications" parent="menu_assetflow_root" action="action_assetflow_notification" sequence="50"/>

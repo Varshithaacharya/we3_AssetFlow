@@ -3,8 +3,8 @@
 
     <!-- Tree View -->
     <record id="view_assetflow_allocation_tree" model="ir.ui.view">
-        <field name="name">asset.allocation.tree</field>
-        <field name="model">asset.allocation</field>
+        <field name="name">assetflow.allocation.tree</field>
+        <field name="model">assetflow.allocation</field>
         <field name="arch" type="xml">
             <tree string="Asset Allocations" decoration-danger="is_overdue == True">
                 <field name="asset_id"/>
@@ -25,8 +25,8 @@
 
     <!-- Form View -->
     <record id="view_assetflow_allocation_form" model="ir.ui.view">
-        <field name="name">asset.allocation.form</field>
-        <field name="model">asset.allocation</field>
+        <field name="name">assetflow.allocation.form</field>
+        <field name="model">assetflow.allocation</field>
         <field name="arch" type="xml">
             <form string="Asset Allocation">
                 <header>
@@ -47,7 +47,7 @@
                         </group>
                     </group>
                     <group string="Notes">
-                        <field name="check_in_notes" nolabel="1" placeholder="Enter check-in notes here..."/>
+                        <field name="checkin_notes" nolabel="1" placeholder="Enter check-in notes here..."/>
                     </group>
                 </sheet>
             </form>
@@ -56,8 +56,8 @@
 
     <!-- Search View -->
     <record id="view_assetflow_allocation_search" model="ir.ui.view">
-        <field name="name">asset.allocation.search</field>
-        <field name="model">asset.allocation</field>
+        <field name="name">assetflow.allocation.search</field>
+        <field name="model">assetflow.allocation</field>
         <field name="arch" type="xml">
             <search string="Search Allocations">
                 <field name="asset_id"/>
@@ -81,7 +81,7 @@
     <!-- Window Action -->
     <record id="action_assetflow_allocation" model="ir.actions.act_window">
         <field name="name">Asset Allocations</field>
-        <field name="res_model">asset.allocation</field>
+        <field name="res_model">assetflow.allocation</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_assetflow_allocation_search"/>
         <field name="help" type="html">

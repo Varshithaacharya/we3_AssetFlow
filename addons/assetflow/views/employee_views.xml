@@ -1,76 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Tree View -->
-    <record id="view_assetflow_employee_tree" model="ir.ui.view">
-        <field name="name">assetflow.employee.tree</field>
-        <field name="model">hr.employee</field>
-        <field name="arch" type="xml">
-            <tree string="Employee Directory">
-                <field name="name"/>
-                <field name="work_email"/>
-                <field name="department_id"/>
-                <field name="role"/>
-                <field name="active" widget="boolean_toggle" string="Status"/>
-            </tree>
-        </field>
-    </record>
-
-    <!-- Form View -->
+    <!-- Inherit hr.employee form to add AssetFlow role field -->
     <record id="view_assetflow_employee_form" model="ir.ui.view">
         <field name="name">assetflow.employee.form</field>
         <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
-            <form string="Employee">
-                <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
-                    <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="work_email"/>
-                            <field name="department_id"/>
-                        </group>
-                        <group>
-                            <field name="role"/>
-                            <field name="active" widget="boolean_toggle" string="Active"/>
-                        </group>
-                    </group>
-                </sheet>
-            </form>
+            <field name="name" position="after">
+                <field name="role"/>
+            </field>
         </field>
     </record>
 
-    <!-- Search View -->
-    <record id="view_assetflow_employee_search" model="ir.ui.view">
-        <field name="name">assetflow.employee.search</field>
+    <!-- Inherit hr.employee list to add role column -->
+    <record id="view_assetflow_employee_tree" model="ir.ui.view">
+        <field name="name">assetflow.employee.tree</field>
         <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
         <field name="arch" type="xml">
-            <search string="Search Employees">
-                <field name="name" string="Employee Name"/>
-                <field name="work_email" string="Email"/>
-                <field name="department_id" string="Department"/>
-                
-                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
-                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
-                <separator/>
-                <filter string="Employees" name="filter_role_employee" domain="[('role', '=', 'employee')]"/>
-                <filter string="Department Heads" name="filter_role_dept_head" domain="[('role', '=', 'dept_head')]"/>
-                <filter string="Asset Managers" name="filter_role_asset_manager" domain="[('role', '=', 'asset_manager')]"/>
-                
-                <group expand="0" string="Group By">
-                    <filter string="Department" name="group_department" context="{'group_by':'department_id'}"/>
-                    <filter string="Role" name="group_role" context="{'group_by':'role'}"/>
-                </group>
-            </search>
+            <field name="name" position="after">
+                <field name="role"/>
+            </field>
         </field>
     </record>
 
-    <!-- Window Action -->
+    <!-- Window Action — points to standard hr.employee views (extended above) -->
     <record id="action_assetflow_employee" model="ir.actions.act_window">
         <field name="name">Employee Directory</field>
         <field name="res_model">hr.employee</field>
-        <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_assetflow_employee_search"/>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">
             Add a new employee
@@ -79,21 +38,6 @@
             Manage the employee directory and assign AssetFlow roles such as Department Head or Asset Manager.
           </p>
         </field>
-    </record>
-
-    <!-- Force Action to use specific views -->
-    <record id="action_assetflow_employee_tree_view" model="ir.actions.act_window.view">
-        <field name="sequence" eval="1"/>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="view_assetflow_employee_tree"/>
-        <field name="act_window_id" ref="action_assetflow_employee"/>
-    </record>
-
-    <record id="action_assetflow_employee_form_view" model="ir.actions.act_window.view">
-        <field name="sequence" eval="2"/>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_assetflow_employee_form"/>
-        <field name="act_window_id" ref="action_assetflow_employee"/>
     </record>
 
 </odoo>

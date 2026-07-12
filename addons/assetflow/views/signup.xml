@@ -2,20 +2,37 @@
 <odoo>
     <template id="signup" name="AssetFlow Signup">
         <t t-call="web.login_layout">
+            <t t-set="no_logo" t-value="True"/>
             <style>
-                /* Style overrides to make it match AssetFlow Design System */
+                /* Style overrides to match AssetFlow Design System */
                 body {
                     background-color: #F9FAFB !important;
                     font-family: 'Inter', sans-serif !important;
+                }
+                /* Hide Odoo's "Your logo" image block (exact Odoo 17 structure) */
+                .o_database_list .card-body > div.text-center.pb-3 {
+                    display: none !important;
+                }
+                /* Override Odoo's hard-coded max-width: 300px on the card and widen it */
+                .o_database_list.card {
+                    max-width: 520px !important;
+                    width: 100% !important;
+                }
+                .container.py-5 {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
                 .oe_signup_form_container {
                     background-color: #FFFFFF !important;
                     border: 1px solid #E5E7EB !important;
                     border-radius: 12px !important;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02) !important;
-                    padding: 32px !important;
-                    max-width: 400px !important;
+                    padding: 40px !important;
+                    max-width: 520px !important;
+                    width: 100% !important;
                     margin: 40px auto !important;
+                    box-sizing: border-box !important;
                 }
                 .form-group {
                     margin-bottom: 20px !important;
@@ -99,13 +116,19 @@
 
             <div class="oe_signup_form_container">
                 <div class="text-center mb-4">
+                    <img src="/assetflow/static/src/img/logo.png" alt="AssetFlow Logo" style="max-height: 60px; margin-bottom: 16px;"/>
                     <h2 style="font-weight: 600; color: #111827; margin-bottom: 8px; font-size: 24px;">AssetFlow</h2>
                     <p style="color: #6B7280; font-size: 14px; margin-bottom: 0;">Create your employee account</p>
                 </div>
 
-                <form class="oe_signup_form" role="form" method="post" t-if="not message">
+                <form class="assetflow_signup_form" role="form" action="/assetflow/signup" method="post" t-if="not message">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <input type="hidden" name="name" id="name" value="Employee"/>
+                    <t t-if="error">
+                        <div class="alert alert-danger" role="alert" style="font-size: 14px; padding: 10px; border-radius: 8px; margin-bottom: 15px; background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5;">
+                            <span t-esc="error"/>
+                        </div>
+                    </t>
 
                     <div class="form-group field-login">
                         <label for="login">Email Address</label>

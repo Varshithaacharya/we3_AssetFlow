@@ -3,8 +3,8 @@
 
     <!-- Tree View -->
     <record id="view_asset_category_tree" model="ir.ui.view">
-        <field name="name">asset.category.tree</field>
-        <field name="model">asset.category</field>
+        <field name="name">assetflow.category.tree</field>
+        <field name="model">assetflow.category</field>
         <field name="arch" type="xml">
             <tree string="Asset Categories">
                 <field name="name"/>
@@ -18,8 +18,8 @@
 
     <!-- Form View -->
     <record id="view_asset_category_form" model="ir.ui.view">
-        <field name="name">asset.category.form</field>
-        <field name="model">asset.category</field>
+        <field name="name">assetflow.category.form</field>
+        <field name="model">assetflow.category</field>
         <field name="arch" type="xml">
             <form string="Asset Category">
                 <sheet>
@@ -42,8 +42,8 @@
 
     <!-- Search View -->
     <record id="view_asset_category_search" model="ir.ui.view">
-        <field name="name">asset.category.search</field>
-        <field name="model">asset.category</field>
+        <field name="name">assetflow.category.search</field>
+        <field name="model">assetflow.category</field>
         <field name="arch" type="xml">
             <search string="Search Asset Categories">
                 <field name="name" string="Category Name"/>
@@ -63,7 +63,7 @@
     <!-- Window Action -->
     <record id="action_asset_category" model="ir.actions.act_window">
         <field name="name">Asset Categories</field>
-        <field name="res_model">asset.category</field>
+        <field name="res_model">assetflow.category</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_asset_category_search"/>
         <field name="help" type="html">

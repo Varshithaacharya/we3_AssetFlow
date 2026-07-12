@@ -142,13 +142,6 @@
     <!-- MENU STRUCTURE INTEGRATION                                              -->
     <!-- ======================================================================= -->
 
-    <!-- Notifications Menu Item under root -->
-    <menuitem id="menu_assetflow_notification" 
-              name="Notifications" 
-              parent="menu_assetflow_root" 
-              action="action_assetflow_notification" 
-              sequence="50"/>
-
     <!-- Activity Log Menu Item under root -->
     <menuitem id="menu_assetflow_activity" 
               name="Activity Log" 

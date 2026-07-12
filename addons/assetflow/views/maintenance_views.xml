@@ -3,8 +3,8 @@
 
     <!-- Tree View -->
     <record id="view_assetflow_maintenance_tree" model="ir.ui.view">
-        <field name="name">asset.maintenance.tree</field>
-        <field name="model">asset.maintenance</field>
+        <field name="name">assetflow.maintenance.tree</field>
+        <field name="model">assetflow.maintenance</field>
         <field name="arch" type="xml">
             <tree string="Maintenance Requests" decoration-danger="priority == 'high'">
                 <field name="asset_id"/>
@@ -27,8 +27,8 @@
 
     <!-- Form View -->
     <record id="view_assetflow_maintenance_form" model="ir.ui.view">
-        <field name="name">asset.maintenance.form</field>
-        <field name="model">asset.maintenance</field>
+        <field name="name">assetflow.maintenance.form</field>
+        <field name="model">assetflow.maintenance</field>
         <field name="arch" type="xml">
             <form string="Maintenance Request">
                 <header>
@@ -57,8 +57,8 @@
 
     <!-- Search View -->
     <record id="view_assetflow_maintenance_search" model="ir.ui.view">
-        <field name="name">asset.maintenance.search</field>
-        <field name="model">asset.maintenance</field>
+        <field name="name">assetflow.maintenance.search</field>
+        <field name="model">assetflow.maintenance</field>
         <field name="arch" type="xml">
             <search string="Search Maintenance Requests">
                 <field name="asset_id"/>
@@ -83,7 +83,7 @@
     <!-- Window Action -->
     <record id="action_assetflow_maintenance" model="ir.actions.act_window">
         <field name="name">Maintenance Requests</field>
-        <field name="res_model">asset.maintenance</field>
+        <field name="res_model">assetflow.maintenance</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_assetflow_maintenance_search"/>
         <field name="help" type="html">

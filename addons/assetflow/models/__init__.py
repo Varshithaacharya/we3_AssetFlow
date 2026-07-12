@@ -8,3 +8,4 @@ from . import maintenance
 from . import audit
 from . import dashboard
 from . import notification
+from . import res_users

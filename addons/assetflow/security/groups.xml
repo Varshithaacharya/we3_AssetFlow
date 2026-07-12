@@ -9,7 +9,7 @@
         </record>
 
         <!-- 4. Employee Group -->
-        <record id="group_employee" model="res.groups">
+        <record id="group_assetflow_employee" model="res.groups">
             <field name="name">Employee</field>
             <field name="category_id" ref="module_category_assetflow"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
@@ -17,10 +17,10 @@
         </record>
 
         <!-- 3. Department Head Group -->
-        <record id="group_department_head" model="res.groups">
+        <record id="group_assetflow_dept_head" model="res.groups">
             <field name="name">Department Head</field>
             <field name="category_id" ref="module_category_assetflow"/>
-            <field name="implied_ids" eval="[(4, ref('group_employee'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_assetflow_employee'))]"/>
             <field name="comment">Can view department assets, approve bookings, raise maintenance requests, and participate in audits.</field>
         </record>
 
@@ -28,7 +28,7 @@
         <record id="group_asset_manager" model="res.groups">
             <field name="name">Asset Manager</field>
             <field name="category_id" ref="module_category_assetflow"/>
-            <field name="implied_ids" eval="[(4, ref('group_employee'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_assetflow_employee'))]"/>
             <field name="comment">Can register assets, allocate assets, approve maintenance, manage bookings, and view reports.</field>
         </record>
 
@@ -36,7 +36,7 @@
         <record id="group_assetflow_admin" model="res.groups">
             <field name="name">AssetFlow Administrator</field>
             <field name="category_id" ref="module_category_assetflow"/>
-            <field name="implied_ids" eval="[(4, ref('group_asset_manager')), (4, ref('group_assetflow_dept_head'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_asset_manager')), (4, ref('group_assetflow_dept_head')), (4, ref('hr.group_hr_manager'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
             <field name="comment">Full access to all AssetFlow features.</field>
         </record>

@@ -1,73 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="assetflow_login" name="AssetFlow Login">
-        <t t-call="web.layout">
-            <t t-set="title">AssetFlow - Login</t>
-            <div class="container-fluid vh-100 p-0 m-0 bg-light">
-                <div class="row h-100 g-0">
-                    <!-- Left Side -->
-                    <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center bg-primary text-white p-5">
-                        <div class="text-center" style="max-width: 80%;">
-                            <!-- Placeholder for Logo -->
-                            <i class="fa fa-cubes fa-5x mb-4"></i>
-                            <h1 class="fw-bold mb-3 display-4">AssetFlow</h1>
-                            <h3 class="fw-light mb-4">Enterprise Asset &amp; Resource Management System</h3>
-                            <p class="lead text-white-50">Manage assets, bookings, maintenance, audits and allocations from one secure platform.</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Right Side -->
-                    <div class="col-lg-6 d-flex justify-content-center align-items-center p-5">
-                        <div class="card shadow-sm rounded-4 border-0 w-100" style="max-width: 450px;">
-                            <div class="card-body p-5">
-                                <h2 class="fw-bold mb-2 text-dark">Welcome Back</h2>
-                                <p class="text-muted mb-4">Sign in to continue.</p>
+    <template id="assetflow_login" inherit_id="web.login" name="AssetFlow Login">
+        <xpath expr="." position="replace">
+            <t t-call="web.login_layout">
+                <style>
+                    body {
+                        background-color: #F9FAFB !important;
+                        font-family: 'Inter', sans-serif !important;
+                    }
+                    /* Hide Odoo's "Your logo" block */
+                    .o_database_list .card-body > div.text-center.pb-3 {
+                        display: none !important;
+                    }
+                    /* Widen card (overrides inline max-width:300px) */
+                    .o_database_list.card {
+                        max-width: 520px !important;
+                        width: 100% !important;
+                        border-radius: 12px !important;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+                        border: 1px solid #E5E7EB !important;
+                    }
+                    .o_database_list .card-body {
+                        padding: 40px !important;
+                    }
+                    /* Form groups */
+                    .login-form-group {
+                        margin-bottom: 18px;
+                    }
+                    .login-form-group label {
+                        display: block;
+                        margin-bottom: 6px;
+                        font-weight: 500;
+                        color: #111827;
+                        font-size: 14px;
+                    }
+                    .login-form-group .form-control {
+                        width: 100%;
+                        border: 1px solid #E5E7EB;
+                        border-radius: 8px;
+                        padding: 9px 12px;
+                        height: 42px;
+                        color: #111827;
+                        font-size: 14px;
+                        box-sizing: border-box;
+                        transition: border-color 0.2s, box-shadow 0.2s;
+                    }
+                    .login-form-group .form-control:focus {
+                        border-color: #6366F1;
+                        box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+                        outline: none;
+                    }
+                    .login-divider {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        margin-bottom: 6px;
+                    }
+                    .login-divider label {
+                        font-weight: 500;
+                        color: #111827;
+                        font-size: 14px;
+                        margin: 0;
+                    }
+                    .login-divider a {
+                        font-size: 13px;
+                        color: #6366F1;
+                        text-decoration: none;
+                        font-weight: 500;
+                    }
+                    .login-divider a:hover { text-decoration: underline; color: #4F46E5; }
+                    .btn-login-primary {
+                        width: 100%;
+                        background-color: #6366F1;
+                        border: none;
+                        color: #FFFFFF;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        height: 42px;
+                        cursor: pointer;
+                        transition: background-color 0.2s;
+                        margin-top: 8px;
+                    }
+                    .btn-login-primary:hover { background-color: #4F46E5; }
+                    .login-footer-text {
+                        text-align: center;
+                        margin-top: 20px;
+                        font-size: 14px;
+                        color: #6B7280;
+                    }
+                    .login-footer-text a {
+                        color: #6366F1;
+                        font-weight: 500;
+                        text-decoration: none;
+                    }
+                    .login-footer-text a:hover { text-decoration: underline; }
+                    .login-remember {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        margin-bottom: 8px;
+                        font-size: 14px;
+                        color: #6B7280;
+                    }
+                </style>
 
-                                <!-- Validation Messages Placeholder -->
-                                <t t-if="error">
-                                    <div class="alert alert-danger rounded-3" role="alert">
-                                        <i class="fa fa-exclamation-circle me-2"></i>
-                                        <span t-esc="error"/>
-                                        <!-- TODO: Handle specific errors (Invalid Email, Required Password, Incorrect Credentials, Account Disabled) -->
-                                    </div>
-                                </t>
-                                
-                                <form role="form" action="/web/login" method="post">
-                                    <!-- TODO: Add CSRF token for backend logic -->
-                                    
-                                    <div class="mb-4">
-                                        <label for="login" class="form-label fw-semibold">Company Email</label>
-                                        <input type="email" name="login" id="login" class="form-control form-control-lg rounded-3" required="required" autofocus="autofocus" placeholder="name@company.com"/>
-                                    </div>
-                                    
-                                    <div class="mb-4">
-                                        <label for="password" class="form-label fw-semibold d-flex justify-content-between">
-                                            <span>Password</span>
-                                            <a href="/web/reset_password" class="text-decoration-none small text-primary">Forgot Password?</a>
-                                        </label>
-                                        <div class="input-group">
-                                            <input type="password" name="password" id="password" class="form-control form-control-lg border-end-0 rounded-start-3" required="required" placeholder="Enter password"/>
-                                            <span class="input-group-text bg-white border-start-0 rounded-end-3" id="togglePassword">
-                                                <i class="fa fa-eye text-muted"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="mb-4 form-check">
-                                        <input type="checkbox" class="form-check-input" id="remember" name="remember"/>
-                                        <label class="form-check-label text-muted" for="remember">Remember Me</label>
-                                    </div>
-                                    
-                                    <div class="d-grid gap-3">
-                                        <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">Login</button>
-                                        <a href="/" class="btn btn-light btn-lg rounded-3 text-muted fw-semibold border">Back to Home</a>
-                                    </div>
-                                </form>
-                            </div>
+                <!-- Logo + Header -->
+                <div class="text-center mb-4">
+                    <img src="/assetflow/static/src/img/logo.png" alt="AssetFlow Logo" style="max-height: 56px; margin-bottom: 14px;"/>
+                    <h2 style="font-weight: 600; color: #111827; margin-bottom: 6px; font-size: 22px;">Welcome Back</h2>
+                    <p style="color: #6B7280; font-size: 14px; margin-bottom: 0;">Sign in to your AssetFlow account</p>
+                </div>
+
+                <!-- Error / Message alerts -->
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert" style="font-size: 14px; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5;">
+                        <i class="fa fa-exclamation-circle me-2"></i>
+                        <span t-esc="error"/>
+                    </div>
+                </t>
+                <t t-if="message">
+                    <div class="alert alert-success" role="alert" style="font-size: 14px; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px;">
+                        <span t-esc="message"/>
+                    </div>
+                </t>
+
+                <!-- Login Form -->
+                <form role="form" action="/web/login" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <!-- Email -->
+                    <div class="login-form-group">
+                        <label for="login">Company Email</label>
+                        <input type="email" name="login" id="login" class="form-control"
+                               t-att-value="login" required="required" autofocus="autofocus"
+                               placeholder="name@company.com" autocomplete="username"/>
+                    </div>
+
+                    <!-- Password with Forgot Password link -->
+                    <div class="login-form-group">
+                        <div class="login-divider">
+                            <label for="password">Password</label>
+                            <a href="/assetflow/forgot-password">Forgot Password?</a>
+                        </div>
+                        <div style="position: relative;">
+                            <input type="password" name="password" id="password" class="form-control"
+                                   required="required" placeholder="Enter your password"
+                                   autocomplete="current-password" style="padding-right: 40px;"/>
+                            <span onclick="var f=document.getElementById('password'); f.type=f.type==='password'?'text':'password'; this.querySelector('i').className=f.type==='password'?'fa fa-eye':'fa fa-eye-slash';"
+                                  style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#9CA3AF;">
+                                <i class="fa fa-eye"></i>
+                            </span>
                         </div>
                     </div>
+
+                    <!-- Remember Me -->
+                    <div class="login-remember">
+                        <input type="checkbox" id="remember" name="remember" style="width:16px;height:16px;accent-color:#6366F1;cursor:pointer;"/>
+                        <label for="remember" style="margin:0;cursor:pointer;">Remember me</label>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-login-primary">Login</button>
+                </form>
+
+                <!-- Footer link -->
+                <div class="login-footer-text">
+                    Don't have an account? <a href="/">Sign Up</a>
                 </div>
-            </div>
-        </t>
+            </t>
+        </xpath>
     </template>
 </odoo>
