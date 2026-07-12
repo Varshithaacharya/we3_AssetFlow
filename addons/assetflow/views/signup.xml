@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="signup" name="AssetFlow Signup">
+        <t t-call="web.login_layout">
+            <style>
+                /* Style overrides to make it match AssetFlow Design System */
+                body {
+                    background-color: #F9FAFB !important;
+                    font-family: 'Inter', sans-serif !important;
+                }
+                .oe_signup_form_container {
+                    background-color: #FFFFFF !important;
+                    border: 1px solid #E5E7EB !important;
+                    border-radius: 12px !important;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02) !important;
+                    padding: 32px !important;
+                    max-width: 400px !important;
+                    margin: 40px auto !important;
+                }
+                .form-group {
+                    margin-bottom: 20px !important;
+                }
+                .form-group label {
+                    display: block !important;
+                    margin-bottom: 8px !important;
+                    font-weight: 500 !important;
+                    color: #111827 !important;
+                    font-size: 14px !important;
+                }
+                .form-control {
+                    width: 100% !important;
+                    border: 1px solid #E5E7EB !important;
+                    border-radius: 8px !important;
+                    padding: 8px 12px !important;
+                    height: 40px !important;
+                    color: #111827 !important;
+                    font-size: 14px !important;
+                    box-sizing: border-box !important;
+                }
+                .form-control:focus {
+                    border-color: #6366F1 !important;
+                    box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important;
+                    outline: none !important;
+                }
+                .designation-badge {
+                    background-color: #F3F4F6 !important;
+                    color: #6B7280 !important;
+                    border: 1px solid #E5E7EB !important;
+                    padding: 10px 14px !important;
+                    border-radius: 8px !important;
+                    font-size: 14px !important;
+                    font-weight: 500 !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    cursor: not-allowed !important;
+                    user-select: none !important;
+                }
+                .btn-primary {
+                    width: 100% !important;
+                    background-color: #6366F1 !important;
+                    border-color: #6366F1 !important;
+                    color: #FFFFFF !important;
+                    border-radius: 8px !important;
+                    font-size: 14px !important;
+                    font-weight: 500 !important;
+                    height: 40px !important;
+                    border: none !important;
+                    cursor: pointer !important;
+                    transition: background-color 0.2s, border-color 0.2s !important;
+                }
+                .btn-primary:hover:not(:disabled) {
+                    background-color: #4F46E5 !important;
+                    border-color: #4F46E5 !important;
+                }
+                .btn-primary:disabled {
+                    background-color: #F3F4F6 !important;
+                    border-color: #E5E7EB !important;
+                    color: #9CA3AF !important;
+                    opacity: 0.5 !important;
+                    cursor: not-allowed !important;
+                }
+                .login-link {
+                    color: #6366F1 !important;
+                    font-weight: 500 !important;
+                    text-decoration: none !important;
+                    font-size: 14px !important;
+                }
+                .login-link:hover {
+                    color: #4F46E5 !important;
+                    text-decoration: underline !important;
+                }
+                .error-message {
+                    color: #EF4444 !important;
+                    font-size: 12px !important;
+                    margin-top: 6px !important;
+                    display: none;
+                }
+            </style>
+
+            <div class="oe_signup_form_container">
+                <div class="text-center mb-4">
+                    <h2 style="font-weight: 600; color: #111827; margin-bottom: 8px; font-size: 24px;">AssetFlow</h2>
+                    <p style="color: #6B7280; font-size: 14px; margin-bottom: 0;">Create your employee account</p>
+                </div>
+
+                <form class="oe_signup_form" role="form" method="post" t-if="not message">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" name="name" id="name" value="Employee"/>
+
+                    <div class="form-group field-login">
+                        <label for="login">Email Address</label>
+                        <input type="email" name="login" t-att-value="login" id="login" class="form-control" autofocus="autofocus" required="required" placeholder="name@company.com"/>
+                    </div>
+
+                    <div class="form-group field-password">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" class="form-control" required="required" placeholder="••••••••"/>
+                    </div>
+
+                    <div class="form-group field-confirm_password">
+                        <label for="confirm_password">Confirm Password</label>
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="required" placeholder="••••••••"/>
+                        <div id="error-message" class="error-message">Passwords do not match.</div>
+                    </div>
+
+                    <div class="form-group field-designation">
+                        <label>Designation</label>
+                        <div class="designation-badge">
+                            Employee
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn btn-primary" disabled="disabled">Sign Up</button>
+
+                    <div class="text-center mt-3">
+                        <a href="/web/login" class="login-link">Already have an account? Log In</a>
+                    </div>
+                </form>
+            </div>
+
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function () {
+                    const emailInput = document.getElementById('login');
+                    const passwordInput = document.getElementById('password');
+                    const confirmInput = document.getElementById('confirm_password');
+                    const nameInput = document.getElementById('name');
+                    const submitBtn = document.getElementById('submit-btn');
+                    const errorMsg = document.getElementById('error-message');
+
+                    function validate() {
+                        const email = emailInput ? emailInput.value.trim() : '';
+                        const password = passwordInput ? passwordInput.value : '';
+                        const confirm = confirmInput ? confirmInput.value : '';
+
+                        if (email &amp;&amp; email.includes('@') &amp;&amp; nameInput) {
+                            nameInput.value = email.split('@')[0];
+                        }
+
+                        let isValid = true;
+
+                        if (!email || !password || !confirm) {
+                            isValid = false;
+                            if (errorMsg) errorMsg.style.display = 'none';
+                        } else if (password !== confirm) {
+                            isValid = false;
+                            if (errorMsg) {
+                                errorMsg.textContent = 'Passwords do not match.';
+                                errorMsg.style.display = 'block';
+                            }
+                            if (confirmInput) confirmInput.style.borderColor = '#EF4444';
+                        } else {
+                            if (errorMsg) errorMsg.style.display = 'none';
+                            if (confirmInput) confirmInput.style.borderColor = '#E5E7EB';
+                        }
+
+                        if (submitBtn) {
+                            submitBtn.disabled = !isValid;
+                            if (isValid) {
+                                submitBtn.style.opacity = '1';
+                                submitBtn.style.cursor = 'pointer';
+                            } else {
+                                submitBtn.style.opacity = '0.5';
+                                submitBtn.style.cursor = 'not-allowed';
+                            }
+                        }
+                    }
+
+                    if (emailInput) emailInput.addEventListener('input', validate);
+                    if (passwordInput) passwordInput.addEventListener('input', validate);
+                    if (confirmInput) confirmInput.addEventListener('input', validate);
+
+                    validate();
+                });
+            </script>
+        </t>
+    </template>
+</odoo>
