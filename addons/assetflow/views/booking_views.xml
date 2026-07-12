@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ======================================================================= -->
+    <!-- Window Action: Resource Bookings                                        -->
+    <!-- ======================================================================= -->
+    <record id="action_assetflow_booking" model="ir.actions.act_window">
+        <field name="name">Resource Bookings</field>
+        <field name="res_model">assetflow.booking</field>
+        <!-- Opens calendar as the primary view, followed by tree and form -->
+        <field name="view_mode">calendar,tree,form</field>
+        <field name="search_view_id" ref="view_assetflow_booking_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Book a shared resource.
+            </p>
+            <p>
+                Reserve bookable assets such as projectors, vehicles, or meeting rooms.
+            </p>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 1. Calendar View Definition                                             -->
+    <!-- ======================================================================= -->
+    <record id="view_assetflow_booking_calendar" model="ir.ui.view">
+        <field name="name">assetflow.booking.calendar</field>
+        <field name="model">assetflow.booking</field>
+        <field name="arch" type="xml">
+            <!-- Grouped/colored by resource_id. Quick-create is disabled to force 
+                 the full form view and ensure backend conflict checks run. -->
+            <calendar string="Resource Bookings" 
+                      date_start="date_start" 
+                      date_stop="date_end" 
+                      color="resource_id" 
+                      quick_create="false">
+                <field name="resource_id"/>
+                <field name="employee_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 2. Tree/List View Definition                                            -->
+    <!-- ======================================================================= -->
+    <record id="view_assetflow_booking_tree" model="ir.ui.view">
+        <field name="name">assetflow.booking.tree</field>
+        <field name="model">assetflow.booking</field>
+        <field name="arch" type="xml">
+            <!-- Color-coded statuses using Odoo's tree decoration attributes -->
+            <tree decoration-info="state == 'upcoming'" 
+                  decoration-success="state == 'ongoing'" 
+                  decoration-muted="state == 'completed'" 
+                  decoration-danger="state == 'cancelled'">
+                <field name="resource_id"/>
+                <field name="employee_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <!-- Badge widget representing status -->
+                <field name="state" widget="badge"
+                       decoration-info="state == 'upcoming'" 
+                       decoration-success="state == 'ongoing'" 
+                       decoration-muted="state == 'completed'" 
+                       decoration-danger="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 3. Form View Definition                                                 -->
+    <!-- ======================================================================= -->
+    <record id="view_assetflow_booking_form" model="ir.ui.view">
+        <field name="name">assetflow.booking.form</field>
+        <field name="model">assetflow.booking</field>
+        <field name="arch" type="xml">
+            <form string="Resource Booking">
+                <header>
+                    <!-- Cancel and Reschedule buttons visible only when status is Upcoming or Ongoing -->
+                    <button name="action_reschedule" 
+                            string="Reschedule" 
+                            type="object" 
+                            class="btn-primary" 
+                            invisible="state in ('completed', 'cancelled')"/>
+                            
+                    <button name="action_cancel" 
+                            string="Cancel Booking" 
+                            type="object" 
+                            class="btn-secondary" 
+                            invisible="state in ('completed', 'cancelled')"/>
+                            
+                    <field name="state" widget="statusbar" statusbar_visible="upcoming,ongoing,completed,cancelled"/>
+                </header>
+                
+                <sheet>
+                    <!-- Hidden field to control warning alert banner visibility -->
+                    <field name="has_conflict" invisible="1"/>
+
+                    <!-- Warning banner visible only when has_conflict is True -->
+                    <div class="alert alert-danger d-flex align-items-center" 
+                         role="alert" 
+                         invisible="not has_conflict" 
+                         style="background-color: #FEE2E2; color: #B91C1C; border: 1px solid #FCA5A5; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                        <i class="fa fa-exclamation-triangle me-2" style="font-size: 16px;"/>
+                        <span>
+                            <strong>Overlap Detected:</strong> This resource has overlapping bookings for the selected time range. Please choose another time slot or resource.
+                        </span>
+                    </div>
+
+                    <group>
+                        <group string="Resource &amp; Booking Details">
+                            <!-- Restricted to assets that are bookable -->
+                            <field name="resource_id" 
+                                   domain="[('is_bookable', '=', True)]" 
+                                   options="{'no_create': True, 'no_open': True}" 
+                                   required="1"/>
+                            <field name="employee_id" required="1"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="date_start" required="1"/>
+                            <field name="date_end" required="1"/>
+                            <!-- Reminder checkbox -->
+                            <field name="reminder" string="Send Reminder Notification"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 4. Search View Definition                                               -->
+    <!-- ======================================================================= -->
+    <record id="view_assetflow_booking_search" model="ir.ui.view">
+        <field name="name">assetflow.booking.search</field>
+        <field name="model">assetflow.booking</field>
+        <field name="arch" type="xml">
+            <search string="Search Bookings">
+                <!-- Search text inputs -->
+                <field name="resource_id" string="Resource"/>
+                <field name="employee_id" string="Booked By"/>
+                
+                <!-- Status filters -->
+                <filter string="Upcoming" name="filter_upcoming" domain="[('state', '=', 'upcoming')]"/>
+                <filter string="Ongoing" name="filter_ongoing" domain="[('state', '=', 'ongoing')]"/>
+                <filter string="Completed" name="filter_completed" domain="[('state', '=', 'completed')]"/>
+                <filter string="Cancelled" name="filter_cancelled" domain="[('state', '=', 'cancelled')]"/>
+                
+                <separator/>
+                
+                <!-- Date range filter presets -->
+                <filter string="Today" name="filter_today" 
+                        domain="[('date_start', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), 
+                                 ('date_start', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                                 
+                <filter string="This Week" name="filter_this_week" 
+                        domain="[('date_start', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d 00:00:00')), 
+                                 ('date_start', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d 23:59:59'))]"/>
+                                 
+                <filter string="This Month" name="filter_this_month" 
+                        domain="[('date_start', '&gt;=', context_today().strftime('%Y-%m-01 00:00:00')), 
+                                 ('date_start', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d 23:59:59'))]"/>
+
+                <separator/>
+
+                <!-- Group By options -->
+                <group expand="0" string="Group By">
+                    <filter string="Resource" name="group_by_resource" context="{'group_by': 'resource_id'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'state'}"/>
+                    <filter string="Booked By" name="group_by_employee" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- MENU STRUCTURE INTEGRATION                                              -->
+    <!-- ======================================================================= -->
+
+    <!-- Sub-menu item: Resource Bookings (Placed under "Assets" parent menu) -->
+    <menuitem id="menu_assetflow_booking" 
+              name="Resource Bookings" 
+              parent="menu_assetflow_assets_parent" 
+              action="action_assetflow_booking" 
+              sequence="30"/>
+
+</odoo>

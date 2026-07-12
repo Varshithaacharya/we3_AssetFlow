@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ======================================================================= -->
+    <!-- 1. Window Actions for KPI Cards (Filtered List Views)                  -->
+    <!-- ======================================================================= -->
+
+    <!-- Assets Available Action -->
+    <record id="action_assets_available" model="ir.actions.act_window">
+        <field name="name">Assets Available</field>
+        <field name="res_model">assetflow.asset</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'available')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No available assets found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Assets Allocated Action -->
+    <record id="action_assets_allocated" model="ir.actions.act_window">
+        <field name="name">Assets Allocated</field>
+        <field name="res_model">assetflow.asset</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'allocated')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No allocated assets found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Maintenance Today Action -->
+    <record id="action_maintenance_today" model="ir.actions.act_window">
+        <field name="name">Maintenance Today</field>
+        <field name="res_model">assetflow.maintenance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('maintenance_date', '=', context_today().strftime('%Y-%m-%d'))]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No maintenance tasks scheduled for today.
+            </p>
+        </field>
+    </record>
+
+    <!-- Active Bookings Action -->
+    <record id="action_active_bookings" model="ir.actions.act_window">
+        <field name="name">Active Bookings</field>
+        <field name="res_model">assetflow.booking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'active')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No active bookings found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Pending Transfers Action -->
+    <record id="action_pending_transfers" model="ir.actions.act_window">
+        <field name="name">Pending Transfers</field>
+        <field name="res_model">assetflow.allocation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'transfer')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No pending transfers found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Upcoming Returns Action -->
+    <record id="action_upcoming_returns" model="ir.actions.act_window">
+        <field name="name">Upcoming Returns</field>
+        <field name="res_model">assetflow.allocation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'allocated'), ('expected_return_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No upcoming returns found.
+            </p>
+        </field>
+    </record>
+
+    <!-- Overdue Returns Action -->
+    <record id="action_overdue_returns" model="ir.actions.act_window">
+        <field name="name">Overdue Returns</field>
+        <field name="res_model">assetflow.allocation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'allocated'), ('expected_return_date', '&lt;', context_today().strftime('%Y-%m-%d'))]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No overdue returns found.
+            </p>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 2. Window Actions for Quick Action Buttons (Form View Modals)          -->
+    <!-- ======================================================================= -->
+
+    <!-- Register Asset Quick Action -->
+    <record id="action_register_asset" model="ir.actions.act_window">
+        <field name="name">Register Asset</field>
+        <field name="res_model">assetflow.asset</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Book Resource Quick Action -->
+    <record id="action_book_resource" model="ir.actions.act_window">
+        <field name="name">Book Resource</field>
+        <field name="res_model">assetflow.booking</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Raise Maintenance Request Quick Action -->
+    <record id="action_raise_maintenance_request" model="ir.actions.act_window">
+        <field name="name">Raise Maintenance Request</field>
+        <field name="res_model">assetflow.maintenance</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 3. Window Action for Dashboard Kanban View                             -->
+    <!-- ======================================================================= -->
+
+    <record id="action_assetflow_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">assetflow.dashboard</field>
+        <field name="view_mode">kanban</field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 4. Custom Kanban Dashboard View Definition                             -->
+    <!-- ======================================================================= -->
+
+    <record id="view_assetflow_dashboard_kanban" model="ir.ui.view">
+        <field name="name">assetflow.dashboard.kanban</field>
+        <field name="model">assetflow.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban create="false" class="o_kanban_dashboard">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="kpi_assets_available"/>
+                <field name="kpi_assets_allocated"/>
+                <field name="kpi_maintenance_today"/>
+                <field name="kpi_active_bookings"/>
+                <field name="kpi_pending_transfers"/>
+                <field name="kpi_upcoming_returns"/>
+                <field name="overdue_returns_count"/>
+                <field name="overdue_returns_json"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_kanban_card_content af_dashboard w-100">
+                            <!-- Custom Styles mapping to the AssetFlow Design System -->
+                            <style>
+                                .af_dashboard {
+                                    background-color: #F9FAFB;
+                                    font-family: 'Inter', 'Roboto', sans-serif;
+                                    padding: 24px;
+                                    border-radius: 12px;
+                                }
+                                .af_header {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    margin-bottom: 24px;
+                                    flex-wrap: wrap;
+                                    gap: 12px;
+                                }
+                                .af_title {
+                                    font-size: 24px;
+                                    font-weight: 600;
+                                    color: #111827;
+                                }
+                                .af_actions_panel {
+                                    display: flex;
+                                    gap: 12px;
+                                }
+                                .af_btn {
+                                    display: inline-flex;
+                                    align-items: center;
+                                    padding: 8px 16px;
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                    border-radius: 8px;
+                                    border: none;
+                                    cursor: pointer;
+                                    text-decoration: none;
+                                    transition: all 0.2s ease-in-out;
+                                }
+                                .af_btn_primary {
+                                    background-color: #6366F1;
+                                    color: #FFFFFF !important;
+                                }
+                                .af_btn_primary:hover {
+                                    background-color: #4F46E5;
+                                }
+                                .af_btn_secondary {
+                                    background-color: #F3F4F6;
+                                    color: #111827 !important;
+                                    border: 1px solid #E5E7EB;
+                                }
+                                .af_btn_secondary:hover {
+                                    background-color: #E5E7EB;
+                                }
+                                .af_grid {
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                                    gap: 24px;
+                                    margin-bottom: 32px;
+                                }
+                                .af_card {
+                                    background: #FFFFFF;
+                                    border-radius: 12px;
+                                    border: 1px solid #E5E7EB;
+                                    padding: 20px;
+                                    display: flex;
+                                    align-items: center;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                                    transition: all 0.2s ease-in-out;
+                                    cursor: pointer;
+                                    text-decoration: none;
+                                    color: inherit;
+                                    width: 100%;
+                                }
+                                .af_card:hover {
+                                    transform: translateY(-2px);
+                                    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+                                    border-color: #6366F1;
+                                }
+                                .af_icon_box {
+                                    width: 48px;
+                                    height: 48px;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    margin-right: 16px;
+                                    flex-shrink: 0;
+                                }
+                                .af_icon_primary { background-color: #EDE9FE; color: #6366F1; }
+                                .af_icon_success { background-color: #D1FAE5; color: #10B981; }
+                                .af_icon_info { background-color: #DBEAFE; color: #3B82F6; }
+                                .af_icon_warning { background-color: #FEF3C7; color: #F59E0B; }
+                                .af_icon_danger { background-color: #FEE2E2; color: #EF4444; }
+                                .af_icon_neutral { background-color: #F3F4F6; color: #6B7280; }
+
+                                .af_card_content {
+                                    flex-grow: 1;
+                                }
+                                .af_card_value {
+                                    font-size: 28px;
+                                    font-weight: 600;
+                                    color: #111827;
+                                    line-height: 1.2;
+                                    margin-bottom: 4px;
+                                }
+                                .af_card_label {
+                                    font-size: 14px;
+                                    color: #6B7280;
+                                    font-weight: 500;
+                                }
+                                .af_section_title {
+                                    font-size: 20px;
+                                    font-weight: 600;
+                                    color: #111827;
+                                    margin-bottom: 16px;
+                                }
+                                .af_list_section {
+                                    background: #FFFFFF;
+                                    border-radius: 12px;
+                                    border: 1px solid #E5E7EB;
+                                    padding: 24px;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                                }
+                                .af_table {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                }
+                                .af_th {
+                                    background-color: #F9FAFB;
+                                    color: #6B7280;
+                                    font-size: 12px;
+                                    font-weight: 600;
+                                    text-transform: uppercase;
+                                    padding: 12px 16px;
+                                    text-align: left;
+                                    border-bottom: 1px solid #E5E7EB;
+                                }
+                                .af_td {
+                                    padding: 14px 16px;
+                                    font-size: 14px;
+                                    color: #111827;
+                                    border-bottom: 1px solid #F3F4F6;
+                                }
+                                .af_tr:hover {
+                                    background-color: #F9FAFB;
+                                }
+                                .af_badge {
+                                    display: inline-flex;
+                                    align-items: center;
+                                    padding: 4px 8px;
+                                    font-size: 12px;
+                                    font-weight: 500;
+                                    border-radius: 9999px;
+                                }
+                                .af_badge_danger {
+                                    background-color: #FEE2E2;
+                                    color: #B91C1C;
+                                }
+                                .af_badge_warning {
+                                    background-color: #FEF3C7;
+                                    color: #D97706;
+                                }
+                            </style>
+
+                            <!-- Dashboard Header with Quick-Actions -->
+                            <div class="af_header">
+                                <div class="af_title">Dashboard</div>
+                                <div class="af_actions_panel">
+                                    <button type="action" name="%(assetflow.action_register_asset)d" class="af_btn af_btn_primary">
+                                        <i class="fa fa-plus me-2"/>Register Asset
+                                    </button>
+                                    <button type="action" name="%(assetflow.action_book_resource)d" class="af_btn af_btn_secondary">
+                                        <i class="fa fa-calendar me-2"/>Book Resource
+                                    </button>
+                                    <button type="action" name="%(assetflow.action_raise_maintenance_request)d" class="af_btn af_btn_secondary">
+                                        <i class="fa fa-wrench me-2"/>Raise Maintenance Request
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 6 KPI Grid Cards -->
+                            <div class="af_grid">
+                                <!-- Card 1: Assets Available -->
+                                <button type="action" name="%(assetflow.action_assets_available)d" class="af_card">
+                                    <div class="af_icon_box af_icon_success">
+                                        <i class="fa fa-check-circle fa-lg"/>
+                                    </div>
+                                    <div class="af_card_content">
+                                        <div class="af_card_value">
+                                            <field name="kpi_assets_available"/>
+                                        </div>
+                                        <div class="af_card_label">Assets Available</div>
+                                    </div>
+                                </button>
+
+                                <!-- Card 2: Assets Allocated -->
+                                <button type="action" name="%(assetflow.action_assets_allocated)d" class="af_card">
+                                    <div class="af_icon_box af_icon_info">
+                                        <i class="fa fa-user fa-lg"/>
+                                    </div>
+                                    <div class="af_card_content">
+                                        <div class="af_card_value">
+                                            <field name="kpi_assets_allocated"/>
+                                        </div>
+                                        <div class="af_card_label">Assets Allocated</div>
+                                    </div>
+                                </button>
+
+                                <!-- Card 3: Maintenance Today -->
+                                <button type="action" name="%(assetflow.action_maintenance_today)d" class="af_card">
+                                    <div class="af_icon_box af_icon_warning">
+                                        <i class="fa fa-wrench fa-lg"/>
+                                    </div>
+                                    <div class="af_card_content">
+                                        <div class="af_card_value">
+                                            <field name="kpi_maintenance_today"/>
+                                        </div>
+                                        <div class="af_card_label">Maintenance Today</div>
+                                    </div>
+                                </button>
+
+                                <!-- Card 4: Active Bookings -->
+                                <button type="action" name="%(assetflow.action_active_bookings)d" class="af_card">
+                                    <div class="af_icon_box af_icon_primary">
+                                        <i class="fa fa-calendar-check-o fa-lg"/>
+                                    </div>
+                                    <div class="af_card_content">
+                                        <div class="af_card_value">
+                                            <field name="kpi_active_bookings"/>
+                                        </div>
+                                        <div class="af_card_label">Active Bookings</div>
+                                    </div>
+                                </button>
+
+                                <!-- Card 5: Pending Transfers -->
+                                <button type="action" name="%(assetflow.action_pending_transfers)d" class="af_card">
+                                    <div class="af_icon_box af_icon_neutral">
+                                        <i class="fa fa-exchange fa-lg"/>
+                                    </div>
+                                    <div class="af_card_content">
+                                        <div class="af_card_value">
+                                            <field name="kpi_pending_transfers"/>
+                                        </div>
+                                        <div class="af_card_label">Pending Transfers</div>
+                                    </div>
+                                </button>
+
+                                <!-- Card 6: Upcoming Returns -->
+                                <button type="action" name="%(assetflow.action_upcoming_returns)d" class="af_card">
+                                    <div class="af_icon_box af_icon_warning">
+                                        <i class="fa fa-clock-o fa-lg"/>
+                                    </div>
+                                    <div class="af_card_content">
+                                        <div class="af_card_value">
+                                            <field name="kpi_upcoming_returns"/>
+                                        </div>
+                                        <div class="af_card_label">Upcoming Returns</div>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Overdue Returns Section -->
+                            <div class="af_section_title">Overdue Returns</div>
+                            <div class="af_list_section">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="af_badge af_badge_danger me-2">
+                                            <field name="overdue_returns_count"/> Overdue
+                                        </span>
+                                        <span class="text-muted">Expected return date has passed</span>
+                                    </div>
+                                    <button type="action" name="%(assetflow.action_overdue_returns)d" class="af_btn af_btn_secondary">
+                                        View All Overdue
+                                    </button>
+                                </div>
+                                
+                                <t t-if="record.overdue_returns_json.raw_value and record.overdue_returns_json.raw_value != '[]'">
+                                    <table class="af_table">
+                                        <thead>
+                                            <tr>
+                                                <th class="af_th">Asset</th>
+                                                <th class="af_th">Assigned To</th>
+                                                <th class="af_th">Expected Return Date</th>
+                                                <th class="af_th" style="text-align: right;">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="overdue_items" t-value="JSON.parse(record.overdue_returns_json.raw_value || '[]')"/>
+                                            <t t-foreach="overdue_items" t-as="item" t-key="item_index">
+                                                <tr class="af_tr">
+                                                    <td class="af_td font-weight-bold">
+                                                        <span class="text-danger"><t t-esc="item.asset_name"/></span>
+                                                    </td>
+                                                    <td class="af_td">
+                                                        <t t-esc="item.employee_name"/>
+                                                    </td>
+                                                    <td class="af_td">
+                                                        <span class="text-danger font-weight-bold">
+                                                            <i class="fa fa-exclamation-triangle me-1"/>
+                                                            <t t-esc="item.expected_return_date"/>
+                                                        </span>
+                                                    </td>
+                                                    <td class="af_td" style="text-align: right;">
+                                                        <span class="af_badge af_badge_danger">Overdue</span>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                                <t t-else="">
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="fa fa-check-circle-o fa-2x text-success mb-2 d-block"/>
+                                        No overdue returns. All assets are on track!
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ======================================================================= -->
+    <!-- 5. Default Seed Data Record to enable display of the Kanban Dashboard  -->
+    <!-- ======================================================================= -->
+
+    <data noupdate="1">
+        <record id="assetflow_dashboard_default" model="assetflow.dashboard">
+            <field name="name">AssetFlow Operational Dashboard</field>
+        </record>
+    </data>
+
+    <!-- ======================================================================= -->
+    <!-- 6. Menu Structure Configuration                                        -->
+    <!-- ======================================================================= -->
+
+    <!-- Root Menu Item -->
+    <menuitem id="menu_assetflow_root" 
+              name="AssetFlow" 
+              web_icon="assetflow,static/description/icon.png"
+              sequence="10"/>
+
+    <!-- Dashboard Menu Item under Root -->
+    <menuitem id="menu_assetflow_dashboard" 
+              name="Dashboard" 
+              parent="menu_assetflow_root" 
+              action="action_assetflow_dashboard" 
+              sequence="1"/>
+
+</odoo>

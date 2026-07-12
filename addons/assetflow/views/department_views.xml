@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="view_assetflow_department_tree" model="ir.ui.view">
+        <field name="name">assetflow.department.tree</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <tree string="Departments">
+                <field name="name"/>
+                <field name="manager_id" string="Department Head"/>
+                <field name="parent_id"/>
+                <field name="active" widget="boolean_toggle" string="Status"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_assetflow_department_form" model="ir.ui.view">
+        <field name="name">assetflow.department.form</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <form string="Department">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="manager_id" string="Department Head"/>
+                        </group>
+                        <group>
+                            <field name="parent_id"/>
+                            <field name="active" widget="boolean_toggle" string="Active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_assetflow_department_search" model="ir.ui.view">
+        <field name="name">assetflow.department.search</field>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <search string="Search Departments">
+                <field name="name" string="Department Name"/>
+                
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Parent Department" name="group_parent" context="{'group_by':'parent_id'}"/>
+                    <filter string="Department Head" name="group_manager" context="{'group_by':'manager_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_assetflow_department" model="ir.actions.act_window">
+        <field name="name">Departments</field>
+        <field name="res_model">hr.department</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_assetflow_department_search"/>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a new department
+          </p>
+          <p>
+            Set up your organization's hierarchy by adding departments and assigning department heads.
+          </p>
+        </field>
+    </record>
+
+    <!-- Force Action to use specific views -->
+    <record id="action_assetflow_department_tree_view" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_assetflow_department_tree"/>
+        <field name="act_window_id" ref="action_assetflow_department"/>
+    </record>
+
+    <record id="action_assetflow_department_form_view" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_assetflow_department_form"/>
+        <field name="act_window_id" ref="action_assetflow_department"/>
+    </record>
+
+</odoo>
