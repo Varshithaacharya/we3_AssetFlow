@@ -22,7 +22,7 @@
         </record>
 
         <!-- Asset Manager Group -->
-        <record id="group_assetflow_manager" model="res.groups">
+        <record id="group_asset_manager" model="res.groups">
             <field name="name">Asset Manager</field>
             <field name="category_id" ref="module_category_assetflow"/>
             <field name="implied_ids" eval="[(4, ref('group_assetflow_employee'))]"/>
@@ -32,7 +32,7 @@
         <record id="group_assetflow_admin" model="res.groups">
             <field name="name">Administrator</field>
             <field name="category_id" ref="module_category_assetflow"/>
-            <field name="implied_ids" eval="[(4, ref('group_assetflow_manager')), (4, ref('group_assetflow_dept_head'))]"/>
+            <field name="implied_ids" eval="[(4, ref('group_asset_manager')), (4, ref('group_assetflow_dept_head'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         </record>
     </data>

@@ -2,16 +2,16 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class AssetCategory(models.Model):
-    _name = 'asset.category'
+    _name = 'assetflow.category'
     _description = 'Asset Category'
     _order = 'name'
 
     name = fields.Char(string='Name', required=True, translate=True)
-    parent_id = fields.Many2one('asset.category', string='Parent Category', ondelete='restrict')
+    parent_id = fields.Many2one('assetflow.category', string='Parent Category', ondelete='restrict')
     active = fields.Boolean(string='Active', default=True)
     warranty_required = fields.Boolean(string='Warranty Required', default=False)
     warranty_period = fields.Integer(string='Warranty Period (Months)', default=0)
-    asset_ids = fields.One2many('asset.asset', 'category_id', string='Assets')
+    asset_ids = fields.One2many('assetflow.asset', 'category_id', string='Assets')
 
     _sql_constraints = [
         ('unique_name', 'unique(name)', 'Category name must be unique!'),

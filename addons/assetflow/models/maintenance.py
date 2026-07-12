@@ -2,13 +2,14 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class AssetMaintenance(models.Model):
-    _name = 'asset.maintenance'
+    _name = 'assetflow.maintenance'
     _description = 'Maintenance Request'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'priority desc, id desc'
 
-    asset_id = fields.Many2one('asset.asset', string='Asset', required=True, tracking=True)
+    asset_id = fields.Many2one('assetflow.asset', string='Asset', required=True, tracking=True)
     description = fields.Text(string='Issue Description', required=True, tracking=True)
+    maintenance_date = fields.Date(string='Maintenance Date', default=fields.Date.context_today, required=True, tracking=True)
     priority = fields.Selection([
         ('low', 'Low'),
         ('medium', 'Medium'),

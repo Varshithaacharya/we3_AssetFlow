@@ -8,7 +8,6 @@
         <field name="name">Asset Audits</field>
         <field name="res_model">assetflow.audit.cycle</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_assetflow_audit_cycle_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first Audit Cycle.

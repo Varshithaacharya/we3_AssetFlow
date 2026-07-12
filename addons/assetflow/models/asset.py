@@ -2,13 +2,13 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 class AssetAsset(models.Model):
-    _name = 'asset.asset'
+    _name = 'assetflow.asset'
     _description = 'Physical Asset'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'asset_tag desc, name'
 
     name = fields.Char(string='Asset Name', required=True, tracking=True)
-    category_id = fields.Many2one('asset.category', string='Category', required=True, tracking=True)
+    category_id = fields.Many2one('assetflow.category', string='Category', required=True, tracking=True)
     asset_tag = fields.Char(string='Asset Tag', required=True, copy=False, default='/', index=True)
     serial_number = fields.Char(string='Serial Number', copy=False, index=True)
     acquisition_date = fields.Date(string='Acquisition Date', required=True, default=fields.Date.context_today)
@@ -20,9 +20,10 @@ class AssetAsset(models.Model):
         ('damaged', 'Damaged')
     ], string='Condition', default='new', required=True, tracking=True)
     location = fields.Char(string='Location', tracking=True)
-    photo = fields.Binary(string='Photo')
-    is_shared = fields.Boolean(string='Shared / Bookable', default=False)
+    photo_or_document = fields.Binary(string='Photo or Document')
+    is_bookable = fields.Boolean(string='Shared / Bookable', default=False)
     department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+    qr_code = fields.Char(string='QR Code', copy=False)
     state = fields.Selection([
         ('available', 'Available'),
         ('allocated', 'Allocated'),
@@ -40,9 +41,9 @@ class AssetAsset(models.Model):
         store=False
     )
     
-    allocation_ids = fields.One2many('asset.allocation', 'asset_id', string='Allocations')
-    booking_ids = fields.One2many('asset.booking', 'asset_id', string='Bookings')
-    maintenance_ids = fields.One2many('asset.maintenance', 'asset_id', string='Maintenance Requests')
+    allocation_ids = fields.One2many('assetflow.allocation', 'asset_id', string='Allocations')
+    booking_ids = fields.One2many('assetflow.booking', 'resource_id', string='Bookings')
+    maintenance_ids = fields.One2many('assetflow.maintenance', 'asset_id', string='Maintenance Requests')
     active = fields.Boolean(string='Active', default=True)
 
     _sql_constraints = [
@@ -53,7 +54,7 @@ class AssetAsset(models.Model):
     @api.depends('allocation_ids.state', 'allocation_ids.employee_id')
     def _compute_current_holder(self):
         for asset in self:
-            active_alloc = asset.allocation_ids.filtered(lambda a: a.state in ('allocated', 'transfer_requested'))
+            active_alloc = asset.allocation_ids.filtered(lambda a: a.state in ('allocated', 'transfer'))
             if active_alloc:
                 asset.current_holder_id = active_alloc[0].employee_id
             else:
@@ -69,5 +70,18 @@ class AssetAsset(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if not vals.get('asset_tag') or vals.get('asset_tag') == '/':
-                vals['asset_tag'] = self.env['ir.sequence'].next_by_code('asset.asset.sequence') or '/'
+                vals['asset_tag'] = self.env['ir.sequence'].next_by_code('assetflow.asset.sequence') or '/'
         return super(AssetAsset, self).create(vals_list)
+
+    def action_send_to_maintenance(self):
+        self.write({'state': 'maintenance'})
+
+    def action_set_to_available(self):
+        self.write({'state': 'available'})
+
+    def action_release(self):
+        # Released: change active allocation to returned
+        active_alloc = self.allocation_ids.filtered(lambda a: a.state == 'allocated')
+        if active_alloc:
+            active_alloc.write({'state': 'returned', 'actual_return_date': fields.Date.today()})
+        self.write({'state': 'available'})
