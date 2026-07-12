@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assetflow_login" name="AssetFlow Login">
+        <t t-call="web.layout">
+            <t t-set="title">AssetFlow - Login</t>
+            <div class="container-fluid vh-100 p-0 m-0 bg-light">
+                <div class="row h-100 g-0">
+                    <!-- Left Side -->
+                    <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center align-items-center bg-primary text-white p-5">
+                        <div class="text-center" style="max-width: 80%;">
+                            <!-- Placeholder for Logo -->
+                            <i class="fa fa-cubes fa-5x mb-4"></i>
+                            <h1 class="fw-bold mb-3 display-4">AssetFlow</h1>
+                            <h3 class="fw-light mb-4">Enterprise Asset &amp; Resource Management System</h3>
+                            <p class="lead text-white-50">Manage assets, bookings, maintenance, audits and allocations from one secure platform.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side -->
+                    <div class="col-lg-6 d-flex justify-content-center align-items-center p-5">
+                        <div class="card shadow-sm rounded-4 border-0 w-100" style="max-width: 450px;">
+                            <div class="card-body p-5">
+                                <h2 class="fw-bold mb-2 text-dark">Welcome Back</h2>
+                                <p class="text-muted mb-4">Sign in to continue.</p>
+
+                                <!-- Validation Messages Placeholder -->
+                                <t t-if="error">
+                                    <div class="alert alert-danger rounded-3" role="alert">
+                                        <i class="fa fa-exclamation-circle me-2"></i>
+                                        <span t-esc="error"/>
+                                        <!-- TODO: Handle specific errors (Invalid Email, Required Password, Incorrect Credentials, Account Disabled) -->
+                                    </div>
+                                </t>
+                                
+                                <form role="form" action="/web/login" method="post">
+                                    <!-- TODO: Add CSRF token for backend logic -->
+                                    
+                                    <div class="mb-4">
+                                        <label for="login" class="form-label fw-semibold">Company Email</label>
+                                        <input type="email" name="login" id="login" class="form-control form-control-lg rounded-3" required="required" autofocus="autofocus" placeholder="name@company.com"/>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="password" class="form-label fw-semibold d-flex justify-content-between">
+                                            <span>Password</span>
+                                            <a href="/web/reset_password" class="text-decoration-none small text-primary">Forgot Password?</a>
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="password" name="password" id="password" class="form-control form-control-lg border-end-0 rounded-start-3" required="required" placeholder="Enter password"/>
+                                            <span class="input-group-text bg-white border-start-0 rounded-end-3" id="togglePassword">
+                                                <i class="fa fa-eye text-muted"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4 form-check">
+                                        <input type="checkbox" class="form-check-input" id="remember" name="remember"/>
+                                        <label class="form-check-label text-muted" for="remember">Remember Me</label>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-3">
+                                        <button type="submit" class="btn btn-primary btn-lg rounded-3 fw-bold shadow-sm">Login</button>
+                                        <a href="/" class="btn btn-light btn-lg rounded-3 text-muted fw-semibold border">Back to Home</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
